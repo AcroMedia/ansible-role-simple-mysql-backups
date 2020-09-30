@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: Dale Anderson
+  description: Back up MySQL databases according to a schedule, and prune the backups according to a retention policy
+  company: Acro Media Inc. https://www.acromedia.com/
+  license: GPLv3
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty
+        - xenial
+        - bionic
+        - focal
+    - name: EL
+      versions:
+        - 6
+
+dependencies: []
