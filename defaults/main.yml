@@ -6,9 +6,9 @@ simple_mysql_backups_log_dir: /var/log/acro/mysql-backups
 
 simple_mysql_backups_keep_last_minimum: 7
 simple_mysql_backups_keep_last_hourly: 1
-simple_mysql_backups_keep_last_daily: 3
+simple_mysql_backups_keep_last_daily: 6
 simple_mysql_backups_keep_last_weekly: 3
-simple_mysql_backups_keep_last_monthly: 3
+simple_mysql_backups_keep_last_monthly: 11
 simple_mysql_backups_space_abort_threshold: 90   # in percent
 simple_mysql_backups_skip_db_pattern: '^information_schema$|^performance_schema$|^sys$'
 simple_mysql_backups_ignore_empty_db_pattern: '.*'
