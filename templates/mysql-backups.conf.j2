@@ -1,0 +1,17 @@
+#!/bin/bash
+#################################################################
+# {{ ansible_managed }}
+# This is a bash include. White space is not trivial.
+#################################################################
+
+BACKUP_DIR="{{ simple_mysql_backups_storage_dir }}"
+KEEP_LAST_MINIMUM={{ simple_mysql_backups_keep_last_minimum }}
+KEEP_LAST_HOURLY={{ simple_mysql_backups_keep_last_hourly }}
+KEEP_LAST_DAILY={{ simple_mysql_backups_keep_last_daily }}
+KEEP_LAST_WEEKLY={{ simple_mysql_backups_keep_last_weekly }}
+KEEP_LAST_MONTHLY={{ simple_mysql_backups_keep_last_monthly }}
+ACTIVITY_LOG="{{ simple_mysql_backups_log_dir }}/backup.log"
+PRUNE_LOG="{{ simple_mysql_backups_log_dir }}/prune.log"
+SPACE_ABORT_THRESHOLD={{ simple_mysql_backups_space_abort_threshold }}
+NO_BACKUPS_FOR='{{ simple_mysql_backups_skip_db_pattern }}'
+IGNORE_EMPTY_DB_PATTERN='{{ simple_mysql_backups_ignore_empty_db_pattern }}'

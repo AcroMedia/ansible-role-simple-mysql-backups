@@ -1,2 +1,52 @@
 ---
-# tasks
+- name: Create destination dirs for scripts and configs
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: true
+  with_items:
+    - "{{ simple_mysql_backups_storage_dir }}"
+    - "{{ simple_mysql_backups_scripts_dir }}"
+    - "{{ simple_mysql_backups_config_dir }}"
+    - "{{ simple_mysql_backups_log_dir }}"
+
+- name: Upload mysql backup script
+  copy:
+    src: scripts/mysql-backups.sh
+    dest: /opt/acro/mysql-backups/mysql-backups.sh
+    mode: '0755'
+    owner: root
+    group: root
+    backup: false
+
+- name: Upload backup prune script
+  copy:
+    src: scripts/prune-backups.sh
+    dest: /opt/acro/mysql-backups/prune-backups.sh
+    mode: '0755'
+    owner: root
+    group: root
+    backup: false
+
+- name: Write mysql backup config file
+  template:
+    src: templates/mysql-backups.conf.j2
+    dest: "{{ simple_mysql_backups_config_dir }}/mysql-backups.conf"
+    backup: true
+
+- name: Create cron job to run mysql backups
+  cron:
+    name: Back up MySQL databases
+    job: >
+      /bin/bash "{{ simple_mysql_backups_scripts_dir }}/mysql-backups.sh"
+    minute: "{{ simple_mysql_backups_cron_minute }}"
+    hour: "{{ simple_mysql_backups_cron_hour }}"
+    day: "{{ simple_mysql_backups_cron_day }}"
+    user: "{{ simple_mysql_backups_cron_user }}"
+    state: "{{ simple_mysql_backups_cron_state }}"
+
+- name: Set up logrotate for backup and prune script activity logs
+  template:
+    src: templates/logrotate.j2
+    dest: /etc/logrotate.d/acro-simple-mysql-backups
+    backup: false   # Logrotate processes ANYTHING in its .d directory. Leaving a backup will create duplicate jobs.

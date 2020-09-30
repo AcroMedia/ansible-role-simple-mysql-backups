@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+{{ simple_mysql_backups_log_dir }}/*.log {
+  rotate 12
+  monthly
+  compress
+  missingok
+  notifempty
+  delaycompress
+}
