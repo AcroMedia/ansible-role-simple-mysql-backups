@@ -7,8 +7,33 @@ Root should be able to run mysql without being prompted for a password. Modern m
 
 ## Example playbook
 ```yaml
-
+# requirements.yml
+---
+- name: acromedia.simple-mysql-backups
+  src: https://github.com/AcroMedia/ansible-role-simple-mysql-backups
+  version: origin/master
 ```
+
+```yaml
+# group_vars/all.yml
+---
+simple_mysql_backups_keep_last_hourly: 1
+simple_mysql_backups_keep_last_daily: 6
+simple_mysql_backups_keep_last_weekly: 3
+simple_mysql_backups_keep_last_monthly: 11
+```
+
+```yaml
+# playbook.yml
+---
+- hosts: mysql-servers
+  gather_facts: true
+  become: true
+  roles:
+    - name: Configure simple mysql backups
+      role: acromedia.simple-mysql-backups
+```
+
 ## Playbook variables
 
 * #### simple_mysql_backups_space_abort_threshold
