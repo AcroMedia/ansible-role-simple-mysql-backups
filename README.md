@@ -1,5 +1,6 @@
 # ansible-role-simple-mysql-backups
-![.github/workflows/molecule.yml](https://github.com/Chithrak07/ansible-role-simple-mysql-backups/workflows/.github/workflows/molecule.yml/badge.svg)
+![.github/workflows/molecule.yml](https://github.com/AcroMedia/ansible-role-simple-mysql-backups/workflows/.github/workflows/molecule.yml/badge.svg)
+
 Back up MySQL databases according to a schedule, and prune the backups according to a retention policy
 
 ## Requirements
