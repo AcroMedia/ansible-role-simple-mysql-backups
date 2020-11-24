@@ -3,5 +3,13 @@
   hosts: all
   become: true
 
+  pre_tasks:
+
+  - name: Install cronie
+    package:
+      name: cronie
+      state: present
+    when: ansible_os_family == 'RedHat'
+
   roles:
     - role: ansible-role-simple-mysql-backups
