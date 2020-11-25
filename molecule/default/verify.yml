@@ -1,0 +1,22 @@
+---
+- name: Check mysql backup is configured
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Check that the backup script is present
+      stat:
+        path: /opt/acro/mysql-backups/mysql-backups.sh
+      register: stat_result
+
+    - name: Check whether mysql prune script is present
+      stat:
+        path: /opt/acro/mysql-backups/prune-backups.sh
+      register: stat_result
+
+    - name: Check whether the back up cron is added
+      shell: crontab -l | grep 'mysql-backups.sh"'
+      become: yes
+      register: result
+    - debug:
+        var: result
