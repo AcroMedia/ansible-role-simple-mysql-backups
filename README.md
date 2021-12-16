@@ -119,3 +119,16 @@ Before a database is backed up, old backups are examined to see if they can be p
     - Warn about any empty database: `''`
     - Ignore warnings about a specific database: `'^my_db_name$'`
     - Ignore warnings about two specific databases: `'^my_db_name$|^my_other_db$'`
+
+
+## Troubleshooting
+
+```
+mysqldump: Error 1412: Table definition has changed, please retry transaction when dumping table `XXXXXXXXXXXX` at row: 0
+WARNING: Backup of database 'XXXXXXXX' reported errors.
+```
+The backup script calls mysqldump with `--single-transaction` and `--quick` options, which lets dumps be taken while a given database is still being used.
+
+If **any** other process issues an `ALTER`, `DROP`, `RENAME`, or `TRUNCATE` on a given database's table while that database is being backed up, the above error will occur.
+
+In a real-world example, if a Drupal site's cron trigger is set to run every 15 minutes, and the Simple XML Sitemap module is set to regenerate the sitemap on every cron run (which in fact does a 'truncate table' under the hood), the backup would only succeed if it did not cross paths (time-wise) with Drupal cron runs.
