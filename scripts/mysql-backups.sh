@@ -17,18 +17,39 @@
 
 function main () {
 
-  require_script '/usr/bin/ionice'
-
-  CONFIG="/etc/acro/mysql-backups.conf"
-  source "$CONFIG" || {
-    err "Could not load $CONFIG"
-    exit 1
-  }
-
   # Root required.
   if [[ $EUID -ne 0 ]]; then
      err "This script must be run as root"
      exit 1
+  fi
+
+  require_script '/usr/bin/ionice'
+
+  # Allow an alternate config file
+  CONFIG="${CONFIG:-/etc/acro/mysql-backups.conf}"
+  if [ ! -f "$CONFIG" ]; then
+    err "Could not find config file: $CONFIG"
+    exit 1
+  fi
+  # shellcheck source=mysql-backups.conf.example
+  source "$CONFIG" || {
+    err "Could not load $CONFIG"
+    exit 1
+  }
+  export CONFIG
+
+  if [ -n "${MY_DEFAULTS:-}" ]; then
+    # Use a defaults file if one is specified
+    if [ ! -f "${MY_DEFAULTS}" ]; then
+      err "MY_DEFAULTS is set to '${MY_DEFAULTS}', but that file does not exist."
+      exit 1
+    fi
+    MYSQL="$(command -v mysql) --defaults-file=${MY_DEFAULTS}"
+    MYSQLDUMP="$(command -v mysqldump) --defaults-file=${MY_DEFAULTS}"
+  else
+    # The default behaviour is to read options from ~/.my.cnf without having to specify it.
+    MYSQL="$(command -v mysql)"
+    MYSQLDUMP="$(command -v mysqldump)"
   fi
 
   # Touch the log file to make sure we can write to it.
@@ -44,7 +65,7 @@ function main () {
      exit 1
   }
 
-  DB_LIST="$(mysql -Bse 'show databases')" || {
+  DB_LIST="$($MYSQL -Bse 'show databases')" || {
     echo "ERROR: Could not retrieve list of databases" | >&2 tee -a "$ACTIVITY_LOG"
     exit 1
   }
@@ -61,7 +82,7 @@ function main () {
 
   # create unique file names so we can keep more than just the most recent copy.
   DATE_TIME="$( /bin/date +%Y-%m-%dT%H:%M:%S%z )"
-  STARTTIME=$(date +%s)
+  STARTTIME=$(/bin/date +%s)
   local DEFAULT_NO_BACKUPS_FOR='^information_schema$|^performance_schema$'
   NO_BACKUPS_FOR="${NO_BACKUPS_FOR:-"${DEFAULT_NO_BACKUPS_FOR}"}"
   {
@@ -118,8 +139,8 @@ function main () {
 
       ATTEMPTED=$((ATTEMPTED+1))
 
-      # PREDICTED_DUMP_KB="$(mysql -ss -e "SELECT CEILING((sum(data_length)) / POWER(1024,1)) as Data_KB FROM information_schema.tables WHERE table_schema = '$db'")"
-      PREDICTED_DUMP_BYTES="$(mysql -ss -e "SELECT sum(data_length) as Data_BB FROM information_schema.tables WHERE table_schema = '$db'")" || {
+      # PREDICTED_DUMP_KB="$($MYSQL -ss -e "SELECT CEILING((sum(data_length)) / POWER(1024,1)) as Data_KB FROM information_schema.tables WHERE table_schema = '$db'")"
+      PREDICTED_DUMP_BYTES="$($MYSQL -ss -e "SELECT sum(data_length) as Data_BB FROM information_schema.tables WHERE table_schema = '$db'")" || {
         echo "ERROR: Could not retreive size of database: ${db}." | >&2 tee -a  "$ACTIVITY_LOG"
         ERRORS=$((ERRORS+1))
         continue
@@ -172,7 +193,7 @@ function main () {
       fi
 
       # Older versions of mysqldump don't understand the events flag
-      if mysqldump --events --version > /dev/null 2>&1; then
+      if $MYSQLDUMP --events --version > /dev/null 2>&1; then
         EVENTSFLAG="--events"
       else
         EVENTSFLAG=""
@@ -195,7 +216,7 @@ function main () {
       fi
 
       set -o pipefail
-      if nice -n 19 ionice -c2 -n7 mysqldump --force --single-transaction --quick $EVENTSFLAG  $ROUTINES_FLAG --triggers --ignore-table=mysql.events "$db" | nice -n 19 ionice -c2 -n7 gzip > "$backup_zipped"; then
+      if nice -n 19 ionice -c2 -n7 $MYSQLDUMP --force --single-transaction --quick $EVENTSFLAG  $ROUTINES_FLAG --triggers --ignore-table=mysql.events "$db" | nice -n 19 ionice -c2 -n7 gzip > "$backup_zipped"; then
         set +o pipefail
         # shellcheck disable=SC2012
         echo "Compressed file is $(ls -laFh "$backup_zipped" |awk '{print $5}') bytes." >> "$ACTIVITY_LOG"
@@ -313,7 +334,7 @@ function human_print_bytes () {
 #
 function mysql_is_aurora () {
   local QRESULT
-  QRESULT=$(mysql -Bse "show variables like 'aurora_version';")  # When defined, will return something like "aurora_version	2.03"
+  QRESULT=$($MYSQL -Bse "show variables like 'aurora_version';")  # When defined, will return something like "aurora_version	2.03"
   if echo "$QRESULT" |grep -wq aurora_version; then
     true
   else

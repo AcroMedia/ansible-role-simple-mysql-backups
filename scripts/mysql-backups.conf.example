@@ -1,0 +1,13 @@
+#!/bin/bash
+MY_DEFAULTS=/root/.my.57.conf
+BACKUP_DIR="/var/backups/mysql"
+KEEP_LAST_MINIMUM=7
+KEEP_LAST_HOURLY=1
+KEEP_LAST_DAILY=3
+KEEP_LAST_WEEKLY=3
+KEEP_LAST_MONTHLY=3
+ACTIVITY_LOG="/var/log/acro/mysql-backups/backup.log"
+PRUNE_LOG="/var/log/acro/mysql-backups/prune.log"
+SPACE_ABORT_THRESHOLD=90
+NO_BACKUPS_FOR='^information_schema$|^performance_schema$|^sys$'
+IGNORE_EMPTY_DB_PATTERN='.*'

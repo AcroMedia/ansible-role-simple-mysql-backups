@@ -38,7 +38,11 @@ main () {
   if [ "$STANDALONE" -eq 1 ]; then
     true
   else
-    CONFIG="/etc/acro/mysql-backups.conf"
+    CONFIG="${CONFIG:-/etc/acro/mysql-backups.conf}"
+    if [ ! -f "$CONFIG" ]; then
+      err "Could not find config file: $CONFIG"
+      exit 1
+    fi
     source "$CONFIG" || {
       err "Could not load $CONFIG"
       exit 1
