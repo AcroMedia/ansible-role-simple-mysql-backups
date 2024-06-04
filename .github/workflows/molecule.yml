@@ -27,6 +27,8 @@ jobs:
     strategy:
       matrix:
         image:
+          - geerlingguy/docker-ubuntu2404-ansible:latest
+          - geerlingguy/docker-ubuntu2204-ansible:latest
           - geerlingguy/docker-ubuntu2004-ansible:latest
           - geerlingguy/docker-ubuntu1804-ansible:latest
           - geerlingguy/docker-ubuntu1604-ansible:latest
@@ -38,7 +40,7 @@ jobs:
         with:
           path: "${{ github.repository }}"
       - name: molecule
-        uses: robertdebock/molecule-action@2.6.3
+        uses: robertdebock/molecule-action@6.0.1
         with:
           image: "${{ matrix.image }}"
           options: parallel
