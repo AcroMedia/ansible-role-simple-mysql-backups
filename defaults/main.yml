@@ -18,3 +18,5 @@ simple_mysql_backups_cron_hour: '4'
 simple_mysql_backups_cron_day: '*'
 simple_mysql_backups_cron_user: root
 simple_mysql_backups_cron_state: present
+
+simple_mysql_backups_prefer_mariadb_client: true

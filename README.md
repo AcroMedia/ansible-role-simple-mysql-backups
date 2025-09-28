@@ -120,6 +120,10 @@ Before a database is backed up, old backups are examined to see if they can be p
     - Ignore warnings about a specific database: `'^my_db_name$'`
     - Ignore warnings about two specific databases: `'^my_db_name$|^my_other_db$'`
 
+* #### simple_mysql_backups_prefer_mariadb_client
+  - Default: `true`
+  - If true, and if both `mysql` and `mariadb` clients are installed, the script will use the `mariadb` / `mariadb-dump` clients.
+  - If no mariadb client is installed, the script will fall back to `mysql` / `mysqldump` clients.
 
 ## Troubleshooting
 
