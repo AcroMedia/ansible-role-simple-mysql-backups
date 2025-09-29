@@ -27,12 +27,12 @@ jobs:
     strategy:
       matrix:
         image:
-          - geerlingguy/docker-ubuntu2404-ansible:latest
-          - geerlingguy/docker-ubuntu2204-ansible:latest
+          #- geerlingguy/docker-ubuntu2404-ansible:latest  @todo fix molecule/docker issues
+          #- geerlingguy/docker-ubuntu2204-ansible:latest  @todo fix molecule/docker issues
           - geerlingguy/docker-ubuntu2004-ansible:latest
           - geerlingguy/docker-centos8-ansible:latest
-          - geerlingguy/docker-rockylinux9-ansible:latest
-          - geerlingguy/docker-rockylinux10-ansible:latest
+          #- geerlingguy/docker-rockylinux9-ansible:latest  @todo fix molecule/docker issues
+          #- geerlingguy/docker-rockylinux10-ansible:latest  @todo fix molecule/docker issues
     steps:
       - name: checkout
         uses: actions/checkout@v2
