@@ -38,18 +38,33 @@ function main () {
   }
   export CONFIG
 
+  if [ "${PREFER_MARIADB_CLIENT:-1}" -eq 1 ] && command -v mariadb > /dev/null; then
+    MYSQL=$(command -v mariadb)
+  elif command -v mysql > /dev/null; then
+    MYSQL=$(command -v mysql)
+  else
+    err "Could not find mysql or mariadb client in path."
+    exit 1
+  fi
+
+  if [ "${PREFER_MARIADB_CLIENT:-1}" -eq 1 ] && command -v mariadb-dump > /dev/null; then
+    MYSQLDUMP=$(command -v mariadb-dump)
+  elif command -v mysqldump > /dev/null; then
+    MYSQLDUMP=$(command -v mysqldump)
+  else
+    err "Could not find mysqldump or mariadb-dump in path."
+    exit 1
+  fi
+
   if [ -n "${MY_DEFAULTS:-}" ]; then
     # Use a defaults file if one is specified
+    # The default behaviour is to read options from ~/.my.cnf without having to specify it.
     if [ ! -f "${MY_DEFAULTS}" ]; then
       err "MY_DEFAULTS is set to '${MY_DEFAULTS}', but that file does not exist."
       exit 1
     fi
-    MYSQL="$(command -v mysql) --defaults-file=${MY_DEFAULTS}"
-    MYSQLDUMP="$(command -v mysqldump) --defaults-file=${MY_DEFAULTS}"
-  else
-    # The default behaviour is to read options from ~/.my.cnf without having to specify it.
-    MYSQL="$(command -v mysql)"
-    MYSQLDUMP="$(command -v mysqldump)"
+    MYSQL="$MYSQL --defaults-file=${MY_DEFAULTS}"
+    MYSQLDUMP="$MYSQLDUMP --defaults-file=${MY_DEFAULTS}"
   fi
 
   # Touch the log file to make sure we can write to it.

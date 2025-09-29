@@ -15,3 +15,4 @@ PRUNE_LOG="{{ simple_mysql_backups_log_dir }}/prune.log"
 SPACE_ABORT_THRESHOLD={{ simple_mysql_backups_space_abort_threshold }}
 NO_BACKUPS_FOR='{{ simple_mysql_backups_skip_db_pattern }}'
 IGNORE_EMPTY_DB_PATTERN='{{ simple_mysql_backups_ignore_empty_db_pattern }}'
+PREFER_MARIADB_CLIENT={{ simple_mysql_backups_prefer_mariadb_client | ternary('1', '0') }}
